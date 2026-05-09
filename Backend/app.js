@@ -6,19 +6,14 @@ import bookingRoutes from "./src/routes/booking.routes.js";
 
 const app = express();
 
-app.use(cors());
-
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
     credentials: true,
   })
 );
-app.use(express.json());
 
-// app.get("/", (req, res) => {
-//   res.send("API Running");
-// });
+app.use(express.json());
 
 app.use("/api/experts", expertRoutes);
 
