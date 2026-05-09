@@ -79,34 +79,46 @@ const ExpertDetailsPage = () => {
     id
   );
 
+  const handleSlotBooked = (
+    data
+  ) => {
+    setExpert((prev) => {
+      if (!prev) return prev;
+
+      const updatedSlotsByDate = {
+        ...prev.slotsByDate,
+      };
+
+      updatedSlotsByDate[
+        data.date
+      ] =
+        updatedSlotsByDate[
+          data.date
+        ]?.map((slot) => {
+          if (
+            slot.time ===
+            data.timeSlot
+          ) {
+            return {
+              ...slot,
+              isBooked: true,
+            };
+          }
+
+          return slot;
+        });
+
+      return {
+        ...prev,
+        slotsByDate:
+          updatedSlotsByDate,
+      };
+    });
+  };
+
   socket.on(
     "slot-booked",
-    (data) => {
-      setExpert((prev) => {
-        if (!prev) return prev;
-
-        const updatedSlots =
-          prev.timeSlots.map((slot) => {
-            if (
-              slot.date === data.date &&
-              slot.time ===
-                data.timeSlot
-            ) {
-              return {
-                ...slot,
-                isBooked: true,
-              };
-            }
-
-            return slot;
-          });
-
-        return {
-          ...prev,
-          timeSlots: updatedSlots,
-        };
-      });
-    }
+    handleSlotBooked
   );
 
   return () => {
@@ -115,7 +127,10 @@ const ExpertDetailsPage = () => {
       id
     );
 
-    socket.off("slot-booked");
+    socket.off(
+      "slot-booked",
+      handleSlotBooked
+    );
   };
 }, [socket, id]);
 
